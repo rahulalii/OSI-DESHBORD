@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSINT Intelligence Platform — Settings</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <nav class="top-nav" id="topNav">
+    <div class="nav-left">
+      <a href="dashboard.html" class="nav-brand"><span class="brand-icon">🕵️</span><span class="brand-text">OSINT</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard">Dashboard</a>
+        <a href="investigations.html" class="nav-link" data-page="investigations">Investigations</a>
+        <a href="tools.html" class="nav-link" data-page="tools">Tools</a>
+        <a href="reports.html" class="nav-link" data-page="reports">Reports</a>
+        <a href="documentation.html" class="nav-link" data-page="documentation">Documentation</a>
+        <a href="settings.html" class="nav-link" data-page="settings">Settings</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="nav-action-btn" id="globalSearchBtn" title="Search (Ctrl+K)"><span>🔍</span></button>
+      <button class="nav-action-btn" id="notificationsBtn" title="Notifications"><span>🔔</span><span class="notification-badge">3</span></button>
+      <button class="nav-action-btn" id="themeToggleBtn" title="Toggle Theme"><span>🌙</span></button>
+      <div class="user-avatar" title="Analyst">A</div>
+      <button class="nav-action-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu"><span>☰</span></button>
+    </div>
+  </nav>
+
+  <main class="main-content" id="mainContent">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Settings</h1>
+        <p class="page-subtitle">Configure your workspace</p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+      
+      <!-- Appearance Card -->
+      <div class="card">
+        <h3 class="card-title">Appearance</h3>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Theme</label>
+            <div>
+              <label style="margin-right: 15px;"><input type="radio" name="theme" value="dark" checked> Dark Mode (Default)</label><br>
+              <label style="margin-right: 15px;"><input type="radio" name="theme" value="light"> Light Mode</label><br>
+              <label><input type="radio" name="theme" value="cyber"> Cyber Theme</label>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 15px;">
+            <label class="form-label">
+              <input type="checkbox" id="compactModeToggle"> Enable Compact Mode
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interface Card -->
+      <div class="card">
+        <h3 class="card-title">Interface</h3>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">
+              <input type="checkbox" id="animationsToggle" checked> Enable UI Animations
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Grid Density</label>
+            <div>
+              <label style="margin-right: 15px;"><input type="radio" name="density" value="comfortable" checked> Comfortable</label><br>
+              <label style="margin-right: 15px;"><input type="radio" name="density" value="compact"> Compact</label><br>
+              <label><input type="radio" name="density" value="spacious"> Spacious</label>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 15px;">
+            <label class="form-label">
+              <input type="checkbox" id="demoBannerToggle" checked> Show Demo Banner
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Management Card -->
+      <div class="card">
+        <h3 class="card-title">Data Management</h3>
+        <div class="card-body" style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="btn btn-secondary" id="btnExportData">Export Investigation (JSON)</button>
+          
+          <label class="btn btn-secondary" style="text-align: center; cursor: pointer;">
+            Import Investigation (JSON)
+            <input type="file" id="fileImportData" accept=".json" style="display: none;">
+          </label>
+          
+          <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 10px 0;">
+          
+          <button class="btn btn-warning" id="btnClearDemoData" style="background-color: var(--warning); color: #000; border: none;">Clear & Reset Demo Data</button>
+          <button class="btn btn-danger" id="btnResetWorkspace">Reset Entire Workspace</button>
+        </div>
+      </div>
+
+      <!-- About Card -->
+      <div class="card">
+        <h3 class="card-title">About</h3>
+        <div class="card-body" style="line-height: 1.8;">
+          <p><strong>Platform Name:</strong> OSINT Intelligence Platform</p>
+          <p><strong>Version:</strong> v2.0.26</p>
+          <p><strong>Type:</strong> Frontend-Only Application</p>
+          <p><strong>Storage:</strong> localStorage</p>
+          <p><strong>Framework:</strong> None (Vanilla HTML/CSS/JS)</p>
+          <p><strong>License:</strong> For authorized research and educational purposes</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="overlays"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Settings logic
+      const themeRadios = document.querySelectorAll('input[name="theme"]');
+      const compactToggle = document.getElementById('compactModeToggle');
+      const animToggle = document.getElementById('animationsToggle');
+      const densityRadios = document.querySelectorAll('input[name="density"]');
+      const demoBannerToggle = document.getElementById('demoBannerToggle');
+      
+      // Load current
+      const currentTheme = localStorage.getItem('osint-theme') || 'dark';
+      document.querySelector(`input[name="theme"][value="${currentTheme}"]`).checked = true;
+      
+      const settings = window.OSINTStorage ? window.OSINTStorage.getSettings() : {};
+      if(settings.compactMode !== undefined) compactToggle.checked = settings.compactMode;
+      if(settings.animations !== undefined) animToggle.checked = settings.animations;
+      if(settings.density) {
+          const r = document.querySelector(`input[name="density"][value="${settings.density}"]`);
+          if(r) r.checked = true;
+      }
+      if(settings.showDemoBanner !== undefined) demoBannerToggle.checked = settings.showDemoBanner;
+
+      // Event listeners for saving
+      const saveSettings = () => {
+          if(window.OSINTStorage) {
+              window.OSINTStorage.saveSettings({
+                  compactMode: compactToggle.checked,
+                  animations: animToggle.checked,
+                  density: document.querySelector('input[name="density"]:checked').value,
+                  showDemoBanner: demoBannerToggle.checked
+              });
+              window.OSINTUI?.showToast('Settings saved', 'success', 2000);
+          }
+      };
+
+      themeRadios.forEach(radio => {
+          radio.addEventListener('change', (e) => {
+              const theme = e.target.value;
+              localStorage.setItem('osint-theme', theme);
+              document.documentElement.setAttribute('data-theme', theme);
+              window.OSINTUI?.showToast('Theme updated', 'success', 2000);
+          });
+      });
+
+      compactToggle.addEventListener('change', saveSettings);
+      animToggle.addEventListener('change', saveSettings);
+      densityRadios.forEach(r => r.addEventListener('change', saveSettings));
+      demoBannerToggle.addEventListener('change', saveSettings);
+
+      // Data management
+      document.getElementById('btnExportData').addEventListener('click', () => {
+          if(window.OSINTStorage) window.OSINTStorage.exportJSON();
+      });
+
+      document.getElementById('fileImportData').addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if(!file) return;
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+              try {
+                  if(window.OSINTStorage) {
+                      window.OSINTStorage.importJSON(evt.target.result);
+                      window.OSINTUI?.showToast('Data imported successfully', 'success', 3000);
+                      setTimeout(() => location.reload(), 1000);
+                  }
+              } catch(err) {
+                  window.OSINTUI?.showToast('Import failed: Invalid JSON', 'error', 3000);
+              }
+          };
+          reader.readAsText(file);
+      });
+
+      document.getElementById('btnClearDemoData').addEventListener('click', () => {
+          if(confirm('Clear all current data and reset to fresh demo data?')) {
+              if(window.OSINTStorage) {
+                  window.OSINTStorage.clearAll();
+                  window.OSINTStorage.initDemoData();
+                  alert('Data reset to demo state.');
+                  location.reload();
+              }
+          }
+      });
+
+      document.getElementById('btnResetWorkspace').addEventListener('click', () => {
+          if(confirm('WARNING: This will permanently delete ALL data and settings. Proceed?')) {
+              localStorage.clear();
+              alert('Workspace reset. Reloading...');
+              location.reload();
+          }
+      });
+    });
+  </script>
+</body>
+</html>

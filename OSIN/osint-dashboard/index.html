@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSINT Intelligence Platform</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    /* Landing specific styles */
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: var(--bg-primary);
+    }
+    
+    .landing-page {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(0, 50, 100, 0.2) 0%, var(--bg-primary) 100%);
+    }
+
+    .landing-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        repeating-linear-gradient(rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 100%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 100%);
+      background-size: 40px 40px;
+    }
+
+    .particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .particle {
+      position: absolute;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatUp 10s infinite linear;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) scale(0);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.8;
+      }
+      80% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-10vh) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* Generative particles via CSS */
+    .particle:nth-child(1) { left: 10%; width: 4px; height: 4px; animation-duration: 8s; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; width: 6px; height: 6px; animation-duration: 12s; animation-delay: 2s; }
+    .particle:nth-child(3) { left: 30%; width: 3px; height: 3px; animation-duration: 7s; animation-delay: 4s; }
+    .particle:nth-child(4) { left: 40%; width: 5px; height: 5px; animation-duration: 9s; animation-delay: 1s; }
+    .particle:nth-child(5) { left: 50%; width: 7px; height: 7px; animation-duration: 11s; animation-delay: 5s; }
+    .particle:nth-child(6) { left: 60%; width: 4px; height: 4px; animation-duration: 10s; animation-delay: 3s; }
+    .particle:nth-child(7) { left: 70%; width: 6px; height: 6px; animation-duration: 13s; animation-delay: 6s; }
+    .particle:nth-child(8) { left: 80%; width: 3px; height: 3px; animation-duration: 8s; animation-delay: 2s; }
+    .particle:nth-child(9) { left: 90%; width: 5px; height: 5px; animation-duration: 9s; animation-delay: 7s; }
+    .particle:nth-child(10) { left: 15%; width: 4px; height: 4px; animation-duration: 11s; animation-delay: 8s; }
+    .particle:nth-child(11) { left: 45%; width: 6px; height: 6px; animation-duration: 14s; animation-delay: 1s; }
+    .particle:nth-child(12) { left: 75%; width: 3px; height: 3px; animation-duration: 9s; animation-delay: 9s; }
+
+    .landing-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 900px;
+      padding: 40px;
+    }
+
+    .landing-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: var(--radius-xl);
+      color: var(--success);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      animation: fadeInDown 1s ease forwards;
+    }
+
+    .landing-title {
+      font-size: 4.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin: 0 0 24px 0;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 40px rgba(0, 217, 255, 0.3);
+      animation: slideUpFade 1s ease forwards;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .landing-subtitle {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin: 0 0 48px 0;
+      max-width: 600px;
+      animation: slideUpFade 1s ease forwards;
+      animation-delay: 0.2s;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .landing-features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .landing-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      color: var(--text-primary);
+      backdrop-filter: blur(12px);
+      font-weight: 500;
+      animation: fadeIn 0.5s ease forwards;
+      opacity: 0;
+    }
+
+    .landing-feature:nth-child(1) { animation-delay: 0.4s; }
+    .landing-feature:nth-child(2) { animation-delay: 0.5s; }
+    .landing-feature:nth-child(3) { animation-delay: 0.6s; }
+    .landing-feature:nth-child(4) { animation-delay: 0.7s; }
+
+    .landing-feature span {
+      font-size: 1.2rem;
+    }
+
+    .landing-disclaimer {
+      margin-bottom: 32px;
+      padding: 12px 24px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: var(--radius-sm);
+      color: var(--warning);
+      font-size: 0.9rem;
+      max-width: 600px;
+      animation: fadeIn 1s ease forwards;
+      animation-delay: 0.8s;
+      opacity: 0;
+    }
+
+    .landing-disclaimer p {
+      margin: 0;
+    }
+
+    .landing-btn {
+      padding: 16px 48px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+      transition: all 0.3s ease;
+      animation: pulseGlow 2s infinite, fadeIn 1s ease forwards;
+      animation-delay: 0, 1s;
+      opacity: 0;
+    }
+
+    .landing-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+      background: #1AE0FF;
+    }
+
+    .landing-version {
+      margin-top: 48px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      animation: fadeIn 1s ease forwards;
+      animation-delay: 1.2s;
+      opacity: 0;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 20px rgba(0, 217, 255, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(0, 217, 255, 0.6); }
+      100% { box-shadow: 0 0 20px rgba(0, 217, 255, 0.4); }
+    }
+
+    @media (max-width: 768px) {
+      .landing-title { font-size: 3rem; }
+      .landing-subtitle { font-size: 1.1rem; }
+      .landing-features { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="landing-page">
+    <!-- Animated background -->
+    <div class="landing-bg">
+      <div class="grid-overlay"></div>
+      <div class="particles">
+        <!-- 12 small floating dots/elements -->
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+      </div>
+    </div>
+    
+    <!-- Main content -->
+    <div class="landing-content">
+      <div class="landing-badge">🛡️ Authorized Research Platform</div>
+      <h1 class="landing-title">OSINT INTELLIGENCE<br>PLATFORM</h1>
+      <p class="landing-subtitle">Open-Source Intelligence • Research • Investigation • Analysis</p>
+      
+      <!-- Feature highlights -->
+      <div class="landing-features">
+        <div class="landing-feature"><span>🔍</span> Investigation Tools</div>
+        <div class="landing-feature"><span>📊</span> Analytics Dashboard</div>
+        <div class="landing-feature"><span>🔐</span> Threat Intelligence</div>
+        <div class="landing-feature"><span>🧩</span> Correlation Engine</div>
+      </div>
+      
+      <!-- Disclaimer -->
+      <div class="landing-disclaimer">
+        <p>⚠️ For authorized research, educational purposes, cybersecurity analysis, and publicly available information only.</p>
+      </div>
+      
+      <button class="landing-btn" id="launchBtn">
+        🚀 Launch Investigation
+      </button>
+      
+      <div class="landing-version">v2.0.26 • Frontend-Only Platform</div>
+    </div>
+  </div>
+
+  <script>
+    // Launch button — smooth transition to dashboard
+    document.getElementById('launchBtn').addEventListener('click', function() {
+      const page = document.querySelector('.landing-page');
+      page.style.opacity = '0';
+      page.style.transform = 'scale(1.05)';
+      page.style.transition = 'all 0.6s ease';
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 500);
+    });
+  </script>
+</body>
+</html>

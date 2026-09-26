@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSINT Intelligence Platform — Investigation Tools</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .module-detail { display: none; }
+    .module-detail.active { display: block; }
+    .graph-workspace {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+      border-radius: var(--radius-md);
+      cursor: grab;
+    }
+    .graph-workspace:active { cursor: grabbing; }
+    .graph-node {
+      position: absolute;
+      background: var(--card-bg);
+      border: 1px solid var(--accent);
+      padding: 10px 15px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      user-select: none;
+      box-shadow: var(--shadow-sm);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .graph-node.selected {
+      border-color: var(--accent-secondary);
+      box-shadow: 0 0 10px var(--accent-secondary);
+    }
+    .graph-connection { stroke: var(--text-muted); stroke-width: 2; z-index: 1; }
+    #svg-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+    .css-map { width: 100%; height: 400px; background: repeating-linear-gradient(45deg, var(--bg-secondary) 0, var(--bg-secondary) 10px, var(--card-bg) 10px, var(--card-bg) 20px); position: relative; border-radius: var(--radius-md); overflow: hidden; }
+    .map-dot { position: absolute; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 10px var(--accent); }
+    .demo-badge { background: var(--warning); color: #000; font-size: 0.7em; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-left: 8px; vertical-align: top; }
+  </style>
+</head>
+<body>
+  <nav class="top-nav" id="topNav">
+    <div class="nav-left">
+      <a href="dashboard.html" class="nav-brand"><span class="brand-icon">🕵️</span><span class="brand-text">OSINT</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard">Dashboard</a>
+        <a href="investigations.html" class="nav-link" data-page="investigations">Investigations</a>
+        <a href="tools.html" class="nav-link" data-page="tools">Tools</a>
+        <a href="reports.html" class="nav-link" data-page="reports">Reports</a>
+        <a href="documentation.html" class="nav-link" data-page="documentation">Documentation</a>
+        <a href="settings.html" class="nav-link" data-page="settings">Settings</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="nav-action-btn" id="globalSearchBtn" title="Search (Ctrl+K)"><span>🔍</span></button>
+      <button class="nav-action-btn" id="notificationsBtn" title="Notifications"><span>🔔</span><span class="notification-badge">3</span></button>
+      <button class="nav-action-btn" id="themeToggleBtn" title="Toggle Theme"><span>🌙</span></button>
+      <div class="user-avatar" title="Analyst">A</div>
+      <button class="nav-action-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu"><span>☰</span></button>
+    </div>
+  </nav>
+
+  <main class="main-content" id="mainContent">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Investigation Tools</h1>
+        <p class="page-subtitle">Select a module to begin your OSINT research</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-target="module-grid-view">All Modules</button>
+      <button class="tab" data-target="module-1">Websites</button>
+      <button class="tab" data-target="module-2">Social Media</button>
+      <button class="tab" data-target="module-3">News</button>
+      <button class="tab" data-target="module-4">Maps</button>
+      <button class="tab" data-target="module-5">Email</button>
+      <button class="tab" data-target="module-6">Username</button>
+      <button class="tab" data-target="module-7">Media</button>
+      <button class="tab" data-target="module-8">Threat Intel</button>
+      <button class="tab" data-target="module-9">Correlation</button>
+    </div>
+
+    <div class="tab-content">
+      <!-- All Modules Grid -->
+      <div id="module-grid-view" class="tab-pane active module-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; padding-top: 24px;">
+        <div class="card module-card" onclick="showModule(1)">
+          <div class="module-icon">🌐</div>
+          <h3 class="module-title">Websites & Search Engines</h3>
+          <p class="module-desc">Analyze URLs, lookup domains, and execute advanced search queries.</p>
+        </div>
+        <div class="card module-card" onclick="showModule(2)">
+          <div class="module-icon">📱</div>
+          <h3 class="module-title">Social Media & Public Profiles</h3>
+          <p class="module-desc">Investigate public social footprints and compare profiles.</p>
+        </div>
+        <div class="card module-card" onclick="showModule(3)">
+          <div class="module-icon">📰</div>
+          <h3 class="module-title">News & Public Records</h3>
+          <p class="module-desc">Search news articles, government registries, and public documents.</p>
+        </div>
+        <div class="card module-card" onclick="showModule(4)">
+          <div class="module-icon">🗺️</div>
+          <h3 class="module-title">Maps & Geolocation</h3>
+          <p class="module-desc">Plot coordinates and manage geographic evidence.</p>
+        </div>
+        <div class="card module-card" onclick="showModule(5)">
+          <div class="module-icon">📧</div>
+          <h3 class="module-title">Email & Domain Intelligence</h3>
+          <p class="module-desc">Lookup MX records, DNS, and potential email breaches.</p>
+        </div>
+        <div class="card module-card" onclick="showModule(6)">
+          <div class="module-icon">🔎</div>
+          <h3 class="module-title">Username & Domain Investigation</h3>
+          <p class="module-desc">Search username availability across multiple platforms.</p>
+        </div>
+        <div class="card module-card" onclick="showModule(7)">
+          <div class="module-icon">🖼️</div>
+          <h3 class="module-title">Image & Video Intelligence</h3>
+          <p class="module-desc">Extract EXIF metadata and perform reverse image searches.</p>
+        </div>
+        <div class="card module-card" onclick="showModule(8)">
+          <div class="module-icon">🔐</div>
+          <h3 class="module-title">Cybersecurity Threat Intelligence</h3>
+          <p class="module-desc">Lookup IPs, domains, and hashes against threat feeds.</p>
+        </div>
+        <div class="card module-card" onclick="showModule(9)">
+          <div class="module-icon">🧩</div>
+          <h3 class="module-title">Intelligence Correlation</h3>
+          <p class="module-desc">Visually map relationships between different pieces of evidence.</p>
+        </div>
+      </div>
+
+      <!-- Module 1: Websites -->
+      <div id="module-1" class="tab-pane module-detail">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🌐 Websites & Search Engines</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showAllModules()">Back to Grid</button>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Search Query Workspace</label>
+              <textarea class="form-input" id="m1-query" rows="3" placeholder="Enter search queries..."></textarea>
+              <button class="btn btn-primary" style="margin-top: 10px;" id="m1-search-btn">Search</button>
+            </div>
+            
+            <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+              <button class="btn btn-secondary" onclick="window.open('https://google.com')">Google</button>
+              <button class="btn btn-secondary" onclick="window.open('https://bing.com')">Bing</button>
+              <button class="btn btn-secondary" onclick="window.open('https://duckduckgo.com')">DuckDuckGo</button>
+              <button class="btn btn-secondary" onclick="window.open('https://archive.org')">Archive.org</button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">URL Analyzer</label>
+              <div style="display: flex; gap: 10px;">
+                <input type="text" id="m1-url" class="form-input" placeholder="https://example.com" style="flex:1;">
+                <button class="btn btn-primary" id="m1-analyze-btn">Analyze URL</button>
+              </div>
+            </div>
+            <div id="m1-url-results" class="card glass-card" style="display:none; margin-bottom: 24px;">
+              <h4 style="margin-top:0;">Analysis Results <span class="demo-badge">DEMO</span></h4>
+              <p><strong>Protocol:</strong> <span id="m1-protocol"></span></p>
+              <p><strong>Hostname:</strong> <span id="m1-hostname"></span></p>
+              <p><strong>Path:</strong> <span id="m1-pathname"></span></p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Domain Lookup (WHOIS)</label>
+              <div style="display: flex; gap: 10px;">
+                <input type="text" id="m1-domain" class="form-input" placeholder="example.com" style="flex:1;">
+                <button class="btn btn-primary" id="m1-domain-btn">Lookup</button>
+              </div>
+            </div>
+            <div id="m1-domain-results" class="card glass-card" style="display:none; margin-bottom: 24px;">
+               <h4 style="margin-top:0;">WHOIS Information <span class="demo-badge">DEMO</span></h4>
+               <p>Registrar: Demo Registrar LLC</p>
+               <p>Created: 2020-01-01</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Robots.txt Viewer <span class="demo-badge">DEMO</span></label>
+              <textarea class="form-input" rows="4" readonly>User-agent: *
+Disallow: /admin
+Disallow: /private</textarea>
+            </div>
+            <button class="btn btn-primary">Add Finding</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 2: Social Media -->
+      <div id="module-2" class="tab-pane module-detail">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📱 Social Media & Public Profiles</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showAllModules()">Back to Grid</button>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Username Search</label>
+              <div style="display: flex; gap: 10px;">
+                <input type="text" id="m2-username" class="form-input" placeholder="username" style="flex:1;">
+                <button class="btn btn-primary" id="m2-search-btn">Search</button>
+              </div>
+            </div>
+            
+            <div id="m2-platforms" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+              <!-- Populated by JS -->
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Profile URL Collection</label>
+              <div class="data-table-container">
+                <table class="data-table" id="m2-urls-table">
+                  <thead><tr><th>Platform</th><th>URL</th><th>Actions</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Public Bio Information</label>
+              <textarea class="form-input" rows="3" placeholder="Enter bio details..."></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+              <div class="card glass-card">
+                <h4>Profile A</h4>
+                <textarea class="form-input" rows="4"></textarea>
+              </div>
+              <div class="card glass-card">
+                <h4>Profile B</h4>
+                <textarea class="form-input" rows="4"></textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Investigation Notes</label>
+              <textarea class="form-input" id="m2-notes" rows="4"></textarea>
+              <button class="btn btn-primary" style="margin-top: 10px;" id="m2-save-notes">Save Notes</button>
+            </div>
+            <p style="font-size: 0.8em; color: var(--text-muted);">Privacy notice: Only publicly available information is collected.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 3: News -->
+      <div id="module-3" class="tab-pane module-detail">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📰 News & Public Records</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showAllModules()">Back to Grid</button>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">News Research</label>
+              <div style="display: flex; gap: 10px;">
+                <input type="text" class="form-input" placeholder="Search news topics..." style="flex:1;">
+                <button class="btn btn-primary">Search</button>
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 24px;">
+              <h4>Source Categories</h4>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span class="badge badge-info">Government</span>
+                <span class="badge badge-warning">Court Records</span>
+                <span class="badge badge-neutral">Company Registry</span>
+                <span class="badge badge-success">Press Releases</span>
+                <span class="badge badge-info">Archives</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label class="form-label" style="margin:0;">Sources</label>
+                <button class="btn btn-primary btn-sm" id="m3-add-source">Add Source</button>
+              </div>
+              <div class="data-table-container">
+                <table class="data-table" id="m3-sources-table">
+                  <thead><tr><th>ID</th><th>Name</th><th>Type</th><th>URL</th><th>Status</th><th>Actions</th></tr></thead>
+                  <tbody>
+                    <tr><td>SRC-001</td><td>Gov Registry</td><td>Government</td><td>http://...</td><td><span class="badge badge-neutral">Unverified</span></td><td><button class="btn btn-sm btn-secondary" onclick="verifySource(this)">Verify</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Research Notes</label>
+              <textarea class="form-input" rows="4"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 4: Maps -->
+      <div id="module-4" class="tab-pane module-detail">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🗺️ Maps & Geolocation</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showAllModules()">Back to Grid</button>
+          </div>
+          <div class="card-body">
+            <div class="css-map" id="m4-map"></div>
+            
+            <div class="form-row" style="margin-top: 16px; display: flex; gap: 16px;">
+              <div class="form-group" style="flex:1;">
+                <label class="form-label">Latitude</label>
+                <input type="number" step="0.000001" id="m4-lat" class="form-input" placeholder="e.g. 40.7128">
+              </div>
+              <div class="form-group" style="flex:1;">
+                <label class="form-label">Longitude</label>
+                <input type="number" step="0.000001" id="m4-lng" class="form-input" placeholder="e.g. -74.0060">
+              </div>
+            </div>
+            <button class="btn btn-primary" id="m4-plot-btn">Plot Point</button>
+
+            <div class="form-group" style="margin-top: 24px;">
+              <label class="form-label">Location Notes</label>
+              <textarea class="form-input" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Address/Reference</label>
+              <input type="text" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Geolocation Evidence</label>
+              <div class="data-table-container">
+                <table class="data-table">
+                  <thead><tr><th>Lat</th><th>Lng</th><th>Reference</th></tr></thead>
+                  <tbody id="m4-evidence"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <p style="font-size: 0.8em; color: var(--text-muted);">Privacy notice: Do not track real-time locations without authorization.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 5: Email -->
+      <div id="module-5" class="tab-pane module-detail">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">📧 Email & Domain Intelligence</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showAllModules()">Back to Grid</button>
+          </div>
+          <div class="card-body">
+            <div class="form-row" style="display:flex; gap:16px;">
+              <div class="form-group" style="flex:1;">
+                <label class="form-label">Email Address</label>
+                <input type="email" id="m5-email" class="form-input" placeholder="target@example.com">
+              </div>
+              <div class="form-group" style="flex:1;">
+                <label class="form-label">Domain</label>
+                <input type="text" id="m5-domain" class="form-input" placeholder="example.com">
+              </div>
+            </div>
+            <button class="btn btn-primary" id="m5-lookup-btn">Lookup</button>
+
+            <div id="m5-results" style="display:none; margin-top: 24px; gap: 16px; display: grid; grid-template-columns: 1fr 1fr;">
+              <div class="card glass-card" style="grid-column: 1 / -1; display:flex; justify-content: space-between;">
+                 <h4 style="margin:0;">Intelligence Results <span class="demo-badge">DEMO DATA</span></h4>
+              </div>
+              <div class="card glass-card">
+                <h4>Domain Info</h4>
+                <p>Domain: <span id="m5-res-domain"></span></p>
+                <p>Registrar: Secure Names LLC</p>
+                <p>Created: 2021-05-10</p>
+              </div>
+              <div class="card glass-card">
+                <h4>DNS Reference</h4>
+                <p>A Record: 192.0.2.1</p>
+                <p>NS Record: ns1.example.com</p>
+              </div>
+              <div class="card glass-card">
+                <h4>MX Reference</h4>
+                <p>Mail Server: mail.demo-server.net</p>
+              </div>
+              <div class="card glass-card">
+                <h4>Public Breach Reference</h4>
+                <input type="text" class="form-input" placeholder="Notes on breaches...">
+              </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 24px;">
+              <label class="form-label">Notes</label>
+              <textarea class="form-input" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 6: Username -->
+      <div id="module-6" class="tab-pane module-detail">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🔎 Username & Domain Investigation</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showAllModules()">Back to Grid</button>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">Username</label>
+              <div style="display: flex; gap: 10px;">
+                <input type="text" id="m6-username" class="form-input" placeholder="johndoe123" style="flex:1;">
+                <button class="btn btn-primary" id="m6-search-user">Search Username</button>
+                <button class="btn btn-secondary" id="m6-search-domain">Search Domain</button>
+                <button class="btn btn-secondary">Add Evidence</button>
+              </div>
+            </div>
+
+            <div id="m6-results" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 24px;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 7: Media -->
+      <div id="module-7" class="tab-pane module-detail">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🖼️ Image & Video Intelligence</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showAllModules()">Back to Grid</button>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label class="form-label">File Upload</label>
+              <div style="border: 2px dashed var(--card-border); padding: 40px; text-align: center; border-radius: var(--radius-md);">
+                <input type="file" id="m7-file" style="display:none;" accept="image/*,video/*">
+                <button class="btn btn-secondary" onclick="document.getElementById('m7-file').click()">Select File</button>
+                <p style="margin-top: 10px; color: var(--text-muted);">or drag and drop here</p>
+              </div>
+            </div>
+
+            <div id="m7-image-meta" class="card glass-card" style="display:none; margin-bottom: 24px;">
+              <h4 style="margin-top:0;">Image Metadata</h4>
+              <div style="display:flex; gap: 24px;">
+                <img id="m7-preview" style="max-width: 200px; max-height: 200px; border-radius: var(--radius-sm);">
+                <div>
+                  <p><strong>Name:</strong> <span id="m7-fname"></span></p>
+                  <p><strong>Type:</strong> <span id="m7-ftype"></span></p>
+                  <p><strong>Size:</strong> <span id="m7-fsize"></span> bytes</p>
+                  <p><strong>Dimensions:</strong> <span id="m7-fdim"></span></p>
+                  <p><strong>Date:</strong> <span id="m7-fdate"></span></p>
+                </div>
+              </div>
+              <div style="margin-top:16px;">
+                <strong>EXIF Data:</strong>
+                <textarea class="form-input" rows="3" readonly id="m7-exif">No EXIF data extracted in demo mode.</textarea>
+              </div>
+            </div>
+
+            <div class="form-group" id="m7-reverse" style="display:none;">
+              <label class="form-label">Reverse Image Search</label>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="window.open('https://images.google.com')">Google Images</button>
+                <button class="btn btn-secondary" onclick="window.open('https://yandex.com/images/')">Yandex</button>
+                <button class="btn btn-secondary" onclick="window.open('https://tineye.com')">TinEye</button>
+              </div>
+            </div>
+
+            <div id="m7-video-meta" class="card glass-card" style="display:none; margin-bottom: 24px;">
+               <h4 style="margin-top:0;">Video Research</h4>
+               <p><strong>Name:</strong> <span id="m7-vname"></span></p>
+               <div class="form-row" style="display:flex; gap: 16px; margin-top: 10px;">
+                 <div class="form-group" style="flex:1;">
+                   <label class="form-label">Duration</label>
+                   <input type="text" class="form-input">
+                 </div>
+                 <div class="form-group" style="flex:1;">
+                   <label class="form-label">Resolution</label>
+                   <input type="text" class="form-input">
+                 </div>
+               </div>
+               <div class="form-group">
+                 <label class="form-label">Notes</label>
+                 <textarea class="form-input" rows="3"></textarea>
+               </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top:16px;">Add Evidence</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 8: Threat Intel -->
+      <div id="module-8" class="tab-pane module-detail">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🔐 Cybersecurity Threat Intelligence</h3>
+            <button class="btn btn-secondary btn-sm" onclick="showAllModules()">Back to Grid</button>
+          </div>
+          <div class="card-body">
+            <div class="form-row" style="display:flex; gap:16px; align-items: flex-end;">
+              <div class="form-group" style="flex:2;">
+                <label class="form-label">Indicator</label>
+                <input type="text" id="m8-indicator" class="form-input" placeholder="IP, domain, hash...">
+              </div>
+              <div class="form-group" style="flex:1;">
+                <label class="form-label">Type</label>
+                <select id="m8-type" class="form-select">
+                  <option>IP Address</option>
+                  <option>Domain</option>
+                  <option>URL</option>
+                  <option>Hash</option>
+                  <option>Email</option>
+                  <option>Username</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-primary" id="m8-lookup-btn">Lookup</button>
+              </div>
+            </div>
+
+            <div id="m8-result-card" class="card glass-card" style="display:none; margin-bottom: 24px;">
+              <div style="display:flex; justify-content: space-between; align-items:center;">
+                <h4 style="margin:0;">Threat Intelligence <span class="demo-badge">DEMO</span></h4>
+                <span class="badge badge-warning">Medium Risk</span>
+              </div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+                <p><strong>Indicator:</strong> <span id="m8-res-ind"></span></p>
+                <p><strong>Type:</strong> <span id="m8-res-type"></span></p>
+                <p><strong>Confidence:</strong> Medium</p>
+                <p><strong>Status:</strong> Under Review</p>
+                <p><strong>Source:</strong> Public Intelligence</p>
+                <p><strong>First Seen:</strong> 2026-09-20</p>
+                <p><strong>Last Seen:</strong> 2026-09-25</p>
+              </div>
+              <div class="form-group" style="margin-top:16px;">
+                <label class="form-label">Analyst Notes</label>
+                <textarea class="form-input" rows="2"></textarea>
+              </div>
+              <button class="btn btn-primary btn-sm">Add to Investigation</button>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Saved Indicators</label>
+              <div class="data-table-container">
+                <table class="data-table">
+                  <thead><tr><th>Indicator</th><th>Type</th><th>Risk</th></tr></thead>
+                  <tbody id="m8-saved"></tbody>
+                </table>
+              </div>
+            </div>
+            
+            <p style="font-size: 0.8em; color: var(--text-muted);">Disclaimer: Demo data only. No live threat intelligence queries.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 9: Correlation -->
+      <div id="module-9" class="tab-pane module-detail">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🧩 Intelligence Correlation</h3>
+            <div class="graph-toolbar" style="display:flex; gap: 8px;">
+              <select id="m9-add-cat" class="form-select" style="width: auto;">
+                <option value="person">Person 👤</option>
+                <option value="social">Social Account 📱</option>
+                <option value="website">Website 🌐</option>
+                <option value="domain">Domain 🔗</option>
+                <option value="email">Email 📧</option>
+                <option value="location">Location 📍</option>
+                <option value="media">Media 🖼️</option>
+                <option value="source">Source 📰</option>
+                <option value="indicator">Indicator 🔐</option>
+                <option value="document">Document 📄</option>
+              </select>
+              <button class="btn btn-primary btn-sm" id="m9-add-node">Add Node</button>
+              <button class="btn btn-secondary btn-sm" id="m9-connect">Connect Nodes</button>
+              <button class="btn btn-danger btn-sm" id="m9-delete">Delete Selected</button>
+              <button class="btn btn-secondary btn-sm" id="m9-clear">Clear All</button>
+              <button class="btn btn-secondary btn-sm" id="m9-zoom-in">Zoom In</button>
+              <button class="btn btn-secondary btn-sm" id="m9-zoom-out">Zoom Out</button>
+              <button class="btn btn-secondary btn-sm" id="m9-reset">Reset View</button>
+              <button class="btn btn-secondary btn-sm" onclick="showAllModules()">Back</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="graph-workspace" id="graph-workspace">
+              <svg id="svg-canvas"></svg>
+              <div id="nodes-container" style="position: absolute; top:0; left:0; width:100%; height:100%; transform-origin: 0 0;"></div>
+            </div>
+            <div id="node-details" class="card glass-card" style="margin-top: 16px; display:none;">
+              <h4>Node Details</h4>
+              <p><strong>Label:</strong> <span id="nd-label"></span></p>
+              <p><strong>Category:</strong> <span id="nd-cat"></span></p>
+              <div class="form-group">
+                <label class="form-label">Notes</label>
+                <textarea class="form-input" id="nd-notes" rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+  
+  <div id="overlays"></div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/tools.js"></script>
+</body>
+</html>

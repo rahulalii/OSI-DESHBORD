@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSINT Intelligence Platform — Reports & Analytics</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .chart-container { width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; position: relative; }
+    .chart-container svg { width: 100%; height: 100%; }
+    .report-preview-container { margin-top: 24px; }
+    .report-preview-content { white-space: pre-wrap; font-family: var(--font-mono); font-size: 14px; background: var(--bg-tertiary); padding: 24px; border-radius: var(--radius-md); overflow-x: auto; color: var(--text-primary); border: 1px solid var(--card-border); }
+    @media print {
+      body * { visibility: hidden; }
+      #reportPreview, #reportPreview * { visibility: visible; }
+      #reportPreview { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="top-nav" id="topNav">
+    <div class="nav-left">
+      <a href="dashboard.html" class="nav-brand"><span class="brand-icon">🕵️</span><span class="brand-text">OSINT</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard">Dashboard</a>
+        <a href="investigations.html" class="nav-link" data-page="investigations">Investigations</a>
+        <a href="tools.html" class="nav-link" data-page="tools">Tools</a>
+        <a href="reports.html" class="nav-link" data-page="reports">Reports</a>
+        <a href="documentation.html" class="nav-link" data-page="documentation">Documentation</a>
+        <a href="settings.html" class="nav-link" data-page="settings">Settings</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="nav-action-btn" id="globalSearchBtn" title="Search (Ctrl+K)"><span>🔍</span></button>
+      <button class="nav-action-btn" id="notificationsBtn" title="Notifications"><span>🔔</span><span class="notification-badge">3</span></button>
+      <button class="nav-action-btn" id="themeToggleBtn" title="Toggle Theme"><span>🌙</span></button>
+      <div class="user-avatar" title="Analyst">A</div>
+      <button class="nav-action-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu"><span>☰</span></button>
+    </div>
+  </nav>
+
+  <main class="main-content" id="mainContent">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Reports & Analytics</h1>
+        <p class="page-subtitle">Generate reports and analyze investigation data</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="analytics">Analytics</button>
+      <button class="tab" data-tab="generator">Report Generator</button>
+      <button class="tab" data-tab="history">Report History</button>
+    </div>
+
+    <div class="tab-content">
+      <!-- Analytics Tab -->
+      <div class="tab-pane active" id="tab-analytics">
+        <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); gap: 24px;">
+          <div class="card">
+            <h3 class="card-title">Sources by Category</h3>
+            <div class="card-body chart-container" id="sourcesBarChart"></div>
+          </div>
+          <div class="card">
+            <h3 class="card-title">Evidence Collected Over Time</h3>
+            <div class="card-body chart-container" id="evidenceLineChart"></div>
+          </div>
+          <div class="card">
+            <h3 class="card-title">Findings by Severity</h3>
+            <div class="card-body chart-container" id="findingsDonutChart"></div>
+          </div>
+          <div class="card">
+            <h3 class="card-title">Verification Status & Activity</h3>
+            <div class="card-body">
+              <div style="margin-bottom: 30px;">
+                <p>Verified vs Unverified Sources</p>
+                <div id="verifiedProgressBar" style="height: 30px; margin-top: 10px;"></div>
+              </div>
+              <div>
+                <p>Investigation Activity Timeline</p>
+                <div id="activitySparkline" class="chart-container" style="height: 100px; margin-top: 10px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report Generator Tab -->
+      <div class="tab-pane" id="tab-generator">
+        <div class="card">
+          <h3 class="card-title">Report Configuration</h3>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label">Select Investigation</label>
+                <select class="form-select" id="reportInvestigationSelect">
+                  <!-- Populated by JS -->
+                </select>
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label">Report Title</label>
+                <input type="text" class="form-input" id="reportTitleInput" placeholder="e.g. Final Investigation Report">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Include Sections</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <label><input type="checkbox" id="secSummary" checked> Executive Summary</label>
+                <label><input type="checkbox" id="secTarget" checked> Target Information</label>
+                <label><input type="checkbox" id="secSources" checked> Sources</label>
+                <label><input type="checkbox" id="secEvidence" checked> Evidence</label>
+                <label><input type="checkbox" id="secFindings" checked> Findings</label>
+                <label><input type="checkbox" id="secTimeline" checked> Timeline</label>
+                <label><input type="checkbox" id="secRelations" checked> Intelligence Relationships</label>
+                <label><input type="checkbox" id="secNotes" checked> Analyst Notes</label>
+                <label><input type="checkbox" id="secVerification" checked> Verification Status</label>
+                <label><input type="checkbox" id="secDisclaimer" checked> Disclaimer</label>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label">Analyst Name</label>
+                <input type="text" class="form-input" id="analystNameInput" value="Analyst Alpha">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Additional Notes</label>
+              <textarea class="form-input" id="additionalNotesInput" rows="3" placeholder="Enter any additional context..."></textarea>
+            </div>
+
+            <button class="btn btn-primary btn-lg" id="btnGenerateReport">Generate Investigation Report</button>
+          </div>
+        </div>
+
+        <div class="report-preview-container" id="reportPreviewContainer" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Report Preview</h3>
+              <div>
+                <button class="btn btn-secondary btn-sm" id="btnPrintReport">🖨️ Print</button>
+                <button class="btn btn-secondary btn-sm" id="btnSaveReport">💾 Save</button>
+                <button class="btn btn-secondary btn-sm" id="btnExportJSON">📋 Export JSON</button>
+                <button class="btn btn-secondary btn-sm" id="btnExportCSV">📊 Export CSV</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="report-preview-content" id="reportPreview"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report History Tab -->
+      <div class="tab-pane" id="tab-history">
+        <div class="card">
+          <h3 class="card-title">Saved Reports</h3>
+          <div class="card-body">
+            <div class="data-table-container">
+              <table class="data-table" id="reportHistoryTable">
+                <thead>
+                  <tr>
+                    <th>Report ID</th>
+                    <th>Investigation</th>
+                    <th>Date</th>
+                    <th>Analyst</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="overlays"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>

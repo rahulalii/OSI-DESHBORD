@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSINT Intelligence Platform — Documentation</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <nav class="top-nav" id="topNav">
+    <div class="nav-left">
+      <a href="dashboard.html" class="nav-brand"><span class="brand-icon">🕵️</span><span class="brand-text">OSINT</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard">Dashboard</a>
+        <a href="investigations.html" class="nav-link" data-page="investigations">Investigations</a>
+        <a href="tools.html" class="nav-link" data-page="tools">Tools</a>
+        <a href="reports.html" class="nav-link" data-page="reports">Reports</a>
+        <a href="documentation.html" class="nav-link" data-page="documentation">Documentation</a>
+        <a href="settings.html" class="nav-link" data-page="settings">Settings</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="nav-action-btn" id="globalSearchBtn" title="Search (Ctrl+K)"><span>🔍</span></button>
+      <button class="nav-action-btn" id="notificationsBtn" title="Notifications"><span>🔔</span><span class="notification-badge">3</span></button>
+      <button class="nav-action-btn" id="themeToggleBtn" title="Toggle Theme"><span>🌙</span></button>
+      <div class="user-avatar" title="Analyst">A</div>
+      <button class="nav-action-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu"><span>☰</span></button>
+    </div>
+  </nav>
+
+  <main class="main-content" id="mainContent">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Documentation</h1>
+        <p class="page-subtitle">Guide to using the OSINT Intelligence Platform</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="getting-started">Getting Started</button>
+      <button class="tab" data-tab="guide">Investigation Guide</button>
+      <button class="tab" data-tab="modules">Modules</button>
+      <button class="tab" data-tab="shortcuts">Keyboard Shortcuts</button>
+      <button class="tab" data-tab="api">API Integration</button>
+      <button class="tab" data-tab="security">Security & Privacy</button>
+    </div>
+
+    <div class="tab-content">
+      <!-- Getting Started -->
+      <div class="tab-pane active" id="tab-getting-started">
+        <div class="card">
+          <h3 class="card-title">Welcome to the Platform</h3>
+          <div class="card-body">
+            <p>This platform provides a comprehensive suite of tools for Open-Source Intelligence gathering, organization, and reporting. Designed for analysts, researchers, and educational purposes.</p>
+            <h4 style="margin-top: 20px;">Quick Start</h4>
+            <ol style="margin-left: 20px; line-height: 1.8;">
+              <li>Launch the platform</li>
+              <li>Create a new investigation in the <strong>Investigations</strong> tab</li>
+              <li>Select investigation modules from the <strong>Tools</strong> tab</li>
+              <li>Collect and organize evidence</li>
+              <li>Generate reports in the <strong>Reports</strong> tab</li>
+            </ol>
+            <h4 style="margin-top: 20px;">System Requirements</h4>
+            <p>A modern web browser with JavaScript enabled (Chrome 90+, Firefox 90+, Edge 90+, Safari 15+). No backend or installation is required, all data is processed locally.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Investigation Guide -->
+      <div class="tab-pane" id="tab-guide">
+        <div class="card">
+          <h3 class="card-title">Investigation Guide</h3>
+          <div class="card-body" style="line-height: 1.6;">
+            <h4>How to create an investigation</h4>
+            <p>Go to the Investigations page and click "New Investigation". Fill out the required details such as Name, Targets, and Priority.</p>
+            <h4>How to add evidence</h4>
+            <p>Evidence can be added directly within an active investigation. Link sources, classify confidence, and attach descriptions.</p>
+            <h4>How to add findings</h4>
+            <p>Synthesize evidence into actionable findings. Assign severity levels from Low to Critical.</p>
+            <h4>How to use the timeline</h4>
+            <p>The timeline automatically updates with milestones, added evidence, and confirmed findings for a chronological view of events.</p>
+            <h4>How to generate reports</h4>
+            <p>Navigate to the Reports page, select your investigation, choose desired sections, and click Generate.</p>
+            <h4>Best practices for OSINT research</h4>
+            <p>Always verify information across multiple independent sources. Maintain objective and professional language in analyst notes.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modules -->
+      <div class="tab-pane" id="tab-modules">
+        <div class="card">
+          <h3 class="card-title">Available Modules</h3>
+          <div class="card-body">
+            <ul style="list-style-type: none; padding: 0;">
+              <li style="margin-bottom: 15px;"><strong>🌐 Websites & Search Engines:</strong> Basic domain lookups and search engine dorking capabilities.</li>
+              <li style="margin-bottom: 15px;"><strong>📱 Social Media & Public Profiles:</strong> Cross-platform username correlation and profile verification.</li>
+              <li style="margin-bottom: 15px;"><strong>📰 News & Public Records:</strong> Search aggregated news sources and open corporate registries.</li>
+              <li style="margin-bottom: 15px;"><strong>🗺️ Maps & Geolocation:</strong> Analyze location data and coordinate mapping.</li>
+              <li style="margin-bottom: 15px;"><strong>📧 Email & Domain Intelligence:</strong> Email validation, MX records, and domain infrastructure.</li>
+              <li style="margin-bottom: 15px;"><strong>🔎 Username & Domain Investigation:</strong> Deep dive into specific identity footprints.</li>
+              <li style="margin-bottom: 15px;"><strong>🖼️ Image & Video Intelligence:</strong> Reverse image search principles and metadata extraction.</li>
+              <li style="margin-bottom: 15px;"><strong>🔐 Cybersecurity Threat Intelligence:</strong> Correlation with known IOCs, CVEs, and threat feeds.</li>
+              <li style="margin-bottom: 15px;"><strong>🧩 Intelligence Correlation:</strong> Visual graph interface for mapping relationships between entities.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Keyboard Shortcuts -->
+      <div class="tab-pane" id="tab-shortcuts">
+        <div class="card">
+          <h3 class="card-title">Keyboard Shortcuts</h3>
+          <div class="card-body">
+            <table class="data-table">
+              <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td><code>Ctrl+K</code></td><td>Open Command Palette</td></tr>
+                <tr><td><code>Ctrl+N</code></td><td>New Investigation</td></tr>
+                <tr><td><code>Ctrl+S</code></td><td>Save Data</td></tr>
+                <tr><td><code>Ctrl+E</code></td><td>Export Data</td></tr>
+                <tr><td><code>Escape</code></td><td>Close Active Modal</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Integration -->
+      <div class="tab-pane" id="tab-api">
+        <div class="card">
+          <h3 class="card-title">API Integration</h3>
+          <div class="card-body">
+            <p><strong>Note:</strong> This platform is currently frontend-only. Backend API integration is planned for future versions.</p>
+            <p>Future external API integration architecture:</p>
+            <ul style="line-height: 1.6; margin-left: 20px;">
+              <li><strong>REST API endpoints structure:</strong> Modular routing for distinct intel sources.</li>
+              <li><strong>Authentication:</strong> Secure bearer tokens handled via proxy.</li>
+              <li><strong>Rate limiting:</strong> Client-side backoff and server-side enforcement.</li>
+              <li><strong>Example requests:</strong> Structured JSON payloads mirroring internal data models.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security & Privacy -->
+      <div class="tab-pane" id="tab-security">
+        <div class="card">
+          <h3 class="card-title">Security & Privacy</h3>
+          <div class="card-body" style="line-height: 1.6;">
+            <h4>What the platform focuses on:</h4>
+            <ul style="margin-left: 20px;">
+              <li>✅ Authorized research</li>
+              <li>✅ Educational purposes</li>
+              <li>✅ Cybersecurity analysis</li>
+              <li>✅ Publicly available information</li>
+            </ul>
+            <h4 style="margin-top: 20px;">What the platform does NOT do:</h4>
+            <ul style="margin-left: 20px; color: var(--danger);">
+              <li>❌ Harvest credentials</li>
+              <li>❌ Bypass authentication</li>
+              <li>❌ Access private accounts</li>
+              <li>❌ Deploy malware</li>
+              <li>❌ Perform unauthorized surveillance</li>
+            </ul>
+            <h4 style="margin-top: 20px;">Data Storage</h4>
+            <p>All data is stored in the browser's <code>localStorage</code>. No data is sent to external servers. It is the User's responsibility to manage data retention and comply with regulations.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="overlays"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.tab');
+      const panes = document.querySelectorAll('.tab-pane');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          panes.forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

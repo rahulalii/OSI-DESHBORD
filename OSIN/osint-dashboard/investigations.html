@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSINT Intelligence Platform — Investigations</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .view-container { display: none; }
+    .view-container.active { display: block; }
+    .inv-card { cursor: pointer; transition: var(--transition-fast); }
+    .inv-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent); }
+  </style>
+</head>
+<body>
+  <nav class="top-nav" id="topNav">
+    <div class="nav-left">
+      <a href="dashboard.html" class="nav-brand"><span class="brand-icon">🕵️</span><span class="brand-text">OSINT</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="dashboard.html" class="nav-link" data-page="dashboard">Dashboard</a>
+        <a href="investigations.html" class="nav-link" data-page="investigations">Investigations</a>
+        <a href="tools.html" class="nav-link" data-page="tools">Tools</a>
+        <a href="reports.html" class="nav-link" data-page="reports">Reports</a>
+        <a href="documentation.html" class="nav-link" data-page="documentation">Documentation</a>
+        <a href="settings.html" class="nav-link" data-page="settings">Settings</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="nav-action-btn" id="globalSearchBtn" title="Search (Ctrl+K)"><span>🔍</span></button>
+      <button class="nav-action-btn" id="notificationsBtn" title="Notifications"><span>🔔</span><span class="notification-badge">3</span></button>
+      <button class="nav-action-btn" id="themeToggleBtn" title="Toggle Theme"><span>🌙</span></button>
+      <div class="user-avatar" title="Analyst">A</div>
+      <button class="nav-action-btn mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu"><span>☰</span></button>
+    </div>
+  </nav>
+
+  <main class="main-content" id="mainContent">
+    
+    <!-- List View -->
+    <div id="list-view" class="view-container active">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h1 class="page-title">Investigations</h1>
+          <p class="page-subtitle">Manage your active OSINT cases and workspaces</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary">Import Investigation</button>
+          <button class="btn btn-primary" id="btn-new-inv">+ New Investigation</button>
+        </div>
+      </div>
+
+      <div class="card glass-card" style="margin-bottom: 24px;">
+        <div style="display:flex; gap: 16px;">
+          <input type="text" id="inv-search" class="form-input" placeholder="Search investigations..." style="flex:1;">
+          <select id="inv-filter" class="form-select" style="width:200px;">
+            <option value="all">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="inv-grid" style="display:grid; grid-template-columns: 1fr; gap: 16px;">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Detail View -->
+    <div id="detail-view" class="view-container">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <button class="btn btn-sm btn-ghost" id="btn-back" style="margin-bottom:8px;">← Back to List</button>
+          <h1 class="page-title" id="det-title">Investigation Details</h1>
+          <div style="display:flex; gap: 8px; margin-top: 8px;">
+            <span id="det-status" class="badge"></span>
+            <span id="det-priority" class="badge"></span>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary">Edit Investigation</button>
+          <button class="btn btn-primary">Generate Report</button>
+        </div>
+      </div>
+
+      <div class="card glass-card" style="margin-bottom: 24px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+          <p><strong>Investigator:</strong> <span id="det-inv-name"></span></p>
+          <p><strong>Created:</strong> <span id="det-created"></span></p>
+          <p><strong>Modified:</strong> <span id="det-modified"></span></p>
+        </div>
+        <div style="margin-top: 16px;">
+          <strong>Tags:</strong> <div id="det-tags" style="display:inline-flex; gap:4px;"></div>
+        </div>
+        <div style="margin-top: 16px;">
+          <strong>Description:</strong>
+          <p id="det-desc"></p>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-target="tab-targets">Targets</button>
+        <button class="tab" data-target="tab-sources">Sources</button>
+        <button class="tab" data-target="tab-evidence">Evidence</button>
+        <button class="tab" data-target="tab-findings">Findings</button>
+        <button class="tab" data-target="tab-timeline">Timeline</button>
+        <button class="tab" data-target="tab-notes">Notes</button>
+      </div>
+
+      <div class="tab-content">
+        <!-- Targets Tab -->
+        <div id="tab-targets" class="tab-pane active">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Targets</h3>
+              <button class="btn btn-primary btn-sm" id="btn-add-target">Add Target</button>
+            </div>
+            <div class="data-table-container">
+              <table class="data-table" id="targets-table">
+                <thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Notes</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sources Tab -->
+        <div id="tab-sources" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Sources</h3>
+              <button class="btn btn-primary btn-sm" id="btn-add-source">Add Source</button>
+            </div>
+            <div class="data-table-container">
+              <table class="data-table" id="sources-table">
+                <thead><tr><th>ID</th><th>Name</th><th>Type</th><th>URL</th><th>Verified</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evidence Tab -->
+        <div id="tab-evidence" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Evidence Management</h3>
+              <button class="btn btn-primary btn-sm" id="btn-add-evidence">Add Evidence</button>
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom:16px;">
+              <input type="text" id="evd-search" class="form-input" placeholder="Search evidence..." style="flex:1;">
+              <select id="evd-type-filter" class="form-select"><option value="">All Types</option></select>
+              <select id="evd-status-filter" class="form-select"><option value="">All Statuses</option></select>
+            </div>
+            <div class="data-table-container">
+              <table class="data-table" id="evidence-table">
+                <thead><tr>
+                  <th style="cursor:pointer;" onclick="sortEvidence('id')">ID ↕</th>
+                  <th style="cursor:pointer;" onclick="sortEvidence('type')">Type ↕</th>
+                  <th>Source</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Confidence</th>
+                  <th style="cursor:pointer;" onclick="sortEvidence('date')">Date ↕</th>
+                  <th>Actions</th>
+                </tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Findings Tab -->
+        <div id="tab-findings" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Findings</h3>
+              <button class="btn btn-primary btn-sm" id="btn-add-finding">Add Finding</button>
+            </div>
+            <div id="findings-container" style="display:grid; gap:16px;"></div>
+          </div>
+        </div>
+
+        <!-- Timeline Tab -->
+        <div id="tab-timeline" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Interactive Timeline</h3>
+              <button class="btn btn-primary btn-sm" id="btn-add-timeline">Add Event</button>
+            </div>
+            <div class="timeline" id="timeline-container" style="padding-left: 20px; border-left: 2px solid var(--card-border); margin-top:20px;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes Tab -->
+        <div id="tab-notes" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Analyst Notes</h3>
+            </div>
+            <div class="card-body">
+              <textarea id="inv-notes-area" class="form-input" rows="15" placeholder="Enter investigation notes..."></textarea>
+              <div style="margin-top:10px; color:var(--text-muted); font-size: 0.8em;" id="notes-status">Last saved: Never</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+  
+  <div id="overlays"></div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/investigations.js"></script>
+</body>
+</html>

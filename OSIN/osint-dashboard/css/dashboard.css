@@ -1,0 +1,214 @@
+/* css/dashboard.css */
+
+/* Dashboard Overview Layout */
+.dashboard-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.dashboard-stats-row {
+  margin-bottom: 24px;
+}
+
+.dashboard-recent-activity {
+  margin-top: 24px;
+}
+
+/* Module Detail Views */
+.module-detail-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.module-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.module-detail-icon {
+  font-size: 3rem;
+  background: var(--bg-secondary);
+  padding: 16px;
+  border-radius: var(--radius-md);
+}
+
+/* Investigation Workspace Layout */
+.investigation-workspace {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  height: calc(100vh - var(--nav-height) - 120px);
+}
+
+.investigation-sidebar {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.investigation-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+}
+
+.investigation-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Evidence Table Styles */
+.evidence-table .badge {
+  text-transform: capitalize;
+}
+
+.evidence-thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--bg-tertiary);
+}
+
+/* Report Preview Styles */
+.report-preview {
+  background: white;
+  color: #333;
+  padding: 40px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: serif;
+}
+
+.report-preview h1, .report-preview h2, .report-preview h3 {
+  color: #111;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+
+.report-preview p {
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+[data-theme="dark"] .report-preview, [data-theme="cyber"] .report-preview {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+}
+[data-theme="dark"] .report-preview h1, [data-theme="dark"] .report-preview h2, [data-theme="dark"] .report-preview h3,
+[data-theme="cyber"] .report-preview h1, [data-theme="cyber"] .report-preview h2, [data-theme="cyber"] .report-preview h3 {
+  color: var(--text-primary);
+  border-bottom-color: var(--card-border);
+}
+
+/* Settings Page Layout */
+.settings-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 32px;
+}
+
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-nav-item {
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.settings-nav-item:hover, .settings-nav-item.active {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.settings-section {
+  display: none;
+}
+.settings-section.active {
+  display: block;
+}
+
+/* Documentation Page Styles */
+.doc-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 32px;
+}
+
+.doc-sidebar {
+  position: sticky;
+  top: calc(var(--nav-height) + 32px);
+  max-height: calc(100vh - var(--nav-height) - 64px);
+  overflow-y: auto;
+}
+
+.doc-content {
+  max-width: 800px;
+}
+
+.doc-content h2 {
+  margin-top: 32px;
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+
+.doc-content p {
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+.doc-content code {
+  background: var(--bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.doc-content pre {
+  background: var(--bg-tertiary);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin-bottom: 16px;
+  border: 1px solid var(--card-border);
+}
+
+.doc-content pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Analytics Charts specifics */
+.analytics-card {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-chart-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
